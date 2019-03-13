@@ -17,27 +17,31 @@ from PyPDF2 import PdfFileWriter, PdfFileReader, PdfFileMerger
 from PyPDF2.pdf import PageObject
 from pdf2image import convert_from_path
 
-parser = argparse.ArgumentParser()
-parser.add_argument("pdf_in")
-args = parser.parse_args()
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("pdf_in")
+    args = parser.parse_args()
 
-reader = PdfFileReader(open(args.pdf_in, 'rb'))
-page_2 = reader.getPage(2)
-page_3 = reader.getPage(3)
+    reader = PdfFileReader(open(args.pdf_in, 'rb'))
+    page_2 = reader.getPage(2)
+    page_3 = reader.getPage(3)
 
-translated_page = PageObject.createBlankPage(None, 2 * page_3.mediaBox.getWidth(), page_3.mediaBox.getHeight())
-translated_page.mergeScaledTranslatedPage(page_3, 1, page_3.mediaBox.getWidth(), 0)
+    translated_page = PageObject.createBlankPage(None, 2 * page_3.mediaBox.getWidth(), page_3.mediaBox.getHeight())
+    translated_page.mergeScaledTranslatedPage(page_3, 1, page_3.mediaBox.getWidth(), 0)
 
-translated_page.mergePage(page_2)
+    translated_page.mergePage(page_2)
 
-writer = PdfFileWriter()
-writer.addPage(translated_page)
+    writer = PdfFileWriter()
+    writer.addPage(translated_page)
 
-with open('tmp-menu.pdf', 'wb') as f:
-    writer.write(f)
+    with open('tmp-menu.pdf', 'wb') as f:
+        writer.write(f)
 
-pages = convert_from_path('tmp-menu.pdf')
-for page in pages:
-    page.save('menu-' + str(date.today()) + '.png', 'PNG')
+    pages = convert_from_path('tmp-menu.pdf')
+    for page in pages:
+        page.save('menu-' + str(date.today()) + '.png', 'PNG')
 
-os.remove('tmp-menu.pdf')
+    os.remove('tmp-menu.pdf')
+
+if __name__ == "__main__":
+    main()
